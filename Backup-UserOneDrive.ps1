@@ -520,16 +520,15 @@ function ConvertTo-SharedMailbox {
 }
 
 Connect-ExchangeOnline -ManagedIdentity -Organization 'domain.com'
-
-$Mailboxes = [System.Collections.ArrayList]::new()
-[array]$Mailboxes += Get-Mailbox -ResultSize Unlimited | Where-Object {$_.CustomAttribute1 -eq 'Data Retained'}
+$Mailboxes = Get-Mailbox -ResultSize Unlimited | Where-Object {$_.CustomAttribute1 -eq 'Data Retained'}
 foreach ($Mailbox in $Mailboxes) {
     try {
-        if ($Mailboxes.RecipientTypeDetails -ne 'SharedMailbox') {
-        Set-Mailbox -Identity $Mailbox.name -Type 'Shared' -Force 
+        if ($Mailbox.RecipientTypeDetails -ne 'SharedMailbox') {
+        Set-Mailbox -Identity $Mailbox.name -Type 'Shared' -Force -Verbose
+        Write-Output "Converting $($Mailbox.Alias) to Shared"
         }
         else {
-            Write-Host "Mailbox $($Mailbox.Alias) is Already Converted"
+            Write-Output "Mailbox $($Mailbox.Alias) is Already Converted"
         }
     }
     catch {
