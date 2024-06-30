@@ -6,8 +6,9 @@ function Get-OAuthToken {
         [parameter(Mandatory = $true)]
         [string]$ClientSecret,
         [parameter(Mandatory = $true)]
-        [string]$TenantName
+        [string]$TenantName  
     )
+
     [hashtable]$Body = [System.Collections.Specialized.OrderedDictionary]::new()
     [hashtable]$TokenSplat = [System.Collections.Specialized.OrderedDictionary]::new()
     [hashtable]$Body.Add("Grant_Type", [string]"client_credentials")
