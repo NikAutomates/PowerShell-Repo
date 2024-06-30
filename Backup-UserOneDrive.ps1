@@ -517,14 +517,13 @@ Adjust authentication as needed.
 function ConvertTo-SharedMailbox {
     [CmdletBinding()]
     param ()
-}
 
 Connect-ExchangeOnline -ManagedIdentity -Organization 'domain.com'
 $Mailboxes = Get-Mailbox -ResultSize Unlimited | Where-Object {$_.CustomAttribute1 -eq 'Data Retained'}
 foreach ($Mailbox in $Mailboxes) {
     try {
         if ($Mailbox.RecipientTypeDetails -ne 'SharedMailbox') {
-        Set-Mailbox -Identity $Mailbox.name -Type 'Shared' -Force -Verbose
+        Set-Mailbox -Identity $Mailbox.name -Type 'Shared' -Force 
         Write-Output "Converting $($Mailbox.Alias) to Shared"
         }
         else {
@@ -533,6 +532,7 @@ foreach ($Mailbox in $Mailboxes) {
     }
     catch {
         throw $Error[0].Exception.Message
+       }
     }
 }
 
