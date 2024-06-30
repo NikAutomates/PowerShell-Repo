@@ -8641,7 +8641,7 @@ Start-Sleep -Seconds 10
 
 
 #Get JWT Token First
-Get-OAuthToken -ClientID 'b4991893-6d74-4d43-a878-b6af8858ccb0' -ClientSecret '' -TenantName 'domain.com'
+Get-OAuthToken -ClientID '' -ClientSecret '' -TenantName 'domain.com'
 
 
 #Execute REST API Functions
