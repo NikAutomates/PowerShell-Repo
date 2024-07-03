@@ -49,7 +49,7 @@ function Get-OAuthToken {
     4/19/2024 - Added -UseDelegatedPermissions as optional positional param
  
 .LINK
-https://www.powershellgallery.com/packages/Graph/
+https://www.powershellgallery.com/packages/Graph/ 
       
 .EXAMPLE
     Invoke-GraphAPIRequest -ClientID "8c193358-c9c9-4255e-acd8c28f4a" -TenantName "MyDomain.com" -URL "https://graph.microsoft.com/v1.0/devices" -Method GET -RunbookUserName "ClientSecret-Graph"
