@@ -13,4 +13,6 @@ build_job:
     - echo "Changed files:"
     - echo "$FILE"
     - for f in $FILE; do pwsh $f; done
-
+  rules:
+    - changes:
+        - deployments/**/*
