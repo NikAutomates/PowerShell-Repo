@@ -2,17 +2,21 @@ image: mcr.microsoft.com/powershell:ubuntu-20.04
 
 stages:
   - build
-  - auth
 
 build_job:
   stage: build
   script:
-    - apt-get update && apt-get install -y git
+    - apt-get update && apt-get install -y git curl apt-transport-https lsb-release gnupg
+    - curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+    - echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/azure-cli.list
+    - apt-get update && apt-get install -y azure-cli
     - echo "Pipeline is running..."
     - FILE=$(git diff --name-only HEAD^1 HEAD | grep 'deployments/.*\.ps1')
     - if [ -z "$FILE" ]; then echo "No PowerShell files changed in the deployments directory."; exit 0; fi
     - echo "Changed files:"
     - echo "$FILE"
+    - az login --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID --federated-token $GITLAB_OIDC_TOKEN
+    - az account show
     - for f in $FILE; do pwsh $f; done
   rules:
     - changes:
@@ -21,12 +25,3 @@ build_job:
 variables:
   AZURE_CLIENT_ID: "<client-id>"
   AZURE_TENANT_ID: "<tenant-id>"
-
-auth_job:
-  stage: auth
-  id_tokens:
-    GITLAB_OIDC_TOKEN:
-      aud: https://gitlab.com
-  script:
-    - az login --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID --federated-token $GITLAB_OIDC_TOKEN
-    - az account show
