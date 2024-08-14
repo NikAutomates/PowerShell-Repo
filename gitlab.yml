@@ -2,6 +2,7 @@ image: mcr.microsoft.com/powershell:ubuntu-20.04
 
 stages:
   - build
+  - auth
 
 build_job:
   stage: build
@@ -16,3 +17,16 @@ build_job:
   rules:
     - changes:
         - deployments/**/*
+
+variables:
+  AZURE_CLIENT_ID: "<client-id>"
+  AZURE_TENANT_ID: "<tenant-id>"
+
+auth_job:
+  stage: auth
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://gitlab.com
+  script:
+    - az login --service-principal -u $AZURE_CLIENT_ID -t $AZURE_TENANT_ID --federated-token $GITLAB_OIDC_TOKEN
+    - az account show
