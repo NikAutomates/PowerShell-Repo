@@ -1,0 +1,12 @@
+https://graph.microsoft.com/beta/applications/{id}/federatedIdentityCredentials
+
+{
+    "name": "GitLabMainBranchCredential2",
+    "issuer": "https://gitlab.com",
+    "subject": "project_path:powershellautomation1/PowerShell:ref_type:branch:ref:main",
+    "description": "OIDC Federation to Git",
+    "audiences": [
+        "https://gitlab.com"
+    ],
+    "claimsMatchingExpression": null
+}
