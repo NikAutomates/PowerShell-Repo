@@ -142,14 +142,15 @@ $HiJackedTokens = Update-StolenAzureTokens
 
 #Import and Install my Authored Module from PSGallery and then snake away. :)
 
+if (([string]::IsNullOrEmpty((Get-InstalledModule -Name 'Graph' -ErrorAction SilentlyContinue)))) {
+    Install-Module -Name 'Graph' -Force -AllowClobber #https://www.powershellgallery.com/packages/Graph
+    Import-Module 'Graph'
+}
+
 $Entity = Read-Host "Would you like to Snake: Groups, Users, Policies Or Applications?"
 while ($Entity -ne "Groups" -and $Entity -ne "Users" -and $Entity -ne "Applications" -and $Entity -ne "Policies") {
     Write-Warning "Invalid Input: Please enter Groups, Users or Applications"
     $Entity = Read-Host "Would you like to Snake: Groups, Users, Policies Or Applications?"
-}
-if (([string]::IsNullOrEmpty((Get-InstalledModule -Name 'Graph' -ErrorAction SilentlyContinue)))) {
-    Install-Module -Name 'Graph' -Force -AllowClobber #https://www.powershellgallery.com/packages/Graph
-    Import-Module 'Graph'
 }
 
 switch ($Entity) {
