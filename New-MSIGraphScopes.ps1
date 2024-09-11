@@ -53,7 +53,7 @@ function New-MSIGraphScopes {
         Invoke-GraphAPIRequest `
             -GraphURL "https://graph.microsoft.com/beta/servicePrincipals/$($MSI.value.ID)/appRoleAssignments" `
             -Method POST `
-            -AccessToken $token `
+            -AccessToken $GraphToken `
             -JsonBody $JsonPayLoad
     }
 }
